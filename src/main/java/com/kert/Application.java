@@ -1,13 +1,13 @@
-package com.kert.intro;
+package com.kert;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class IntroApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(IntroApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
