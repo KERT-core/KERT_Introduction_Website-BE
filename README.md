@@ -32,13 +32,13 @@ git pull origin dev
 1. 레포지토리 클론
 
 ```shell
-git clone https://github.com/KERT-core/KERT_Introduction_Website-FE
+git clone https://github.com/KERT-core/KERT_Introduction_Website-BE
 ```
 
 2. 클론한 폴더로 이동
 
 ```shell
-cd KERT_Introduction_Website-FE
+cd KERT_Introduction_Website-BE
 ```
 
 3. dev 브랜치로 전환
@@ -119,4 +119,4 @@ git push origin dev
 
 ## 사용하는 프레임워크/라이브러리
 
-### SpringBoot + MySQL
+### SpringBoot 3.3.2 + MySQL
