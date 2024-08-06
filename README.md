@@ -47,18 +47,6 @@ cd KERT_Introduction_Website-BE
 git switch dev
 ```
 
-4. 라이브러리/프레임워크 설치
-
-```shell
-npm install
-```
-
-5. 개발 서버 실행
-
-```shell
-npm run dev -- --open
-```
-
 ### 최종 수정을 끝내고 레포지토리에 올릴 때
 
 1. 변경 사항 추가
