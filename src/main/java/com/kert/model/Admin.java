@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Admin {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long adminId;
+    private Long studentId;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", referencedColumnName = "studentId")
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "student_id")
     private User user;
 
     private String generation;
