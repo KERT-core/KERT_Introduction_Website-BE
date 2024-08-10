@@ -20,4 +20,5 @@ public class Admin {
 
     private String generation;
     private String role;
+    private String description;
 }

@@ -9,7 +9,8 @@ Content-Type: application/json
 {
   "student_id": 2024123456,
   "generation": "2022.1",
-  "role": "president"
+  "role": "president",
+    "description": "I am the president of the student council."
 }
 
 ### GET request
@@ -22,7 +23,8 @@ Content-Type: application/json
 {
   "student_id": 2024123456,
   "generation": "2022.1",
-  "role": "vice-president"
+  "role": "vice-president",
+  "description": "I am the vice-president of the student council."
 }
 
 ### DELETE request
