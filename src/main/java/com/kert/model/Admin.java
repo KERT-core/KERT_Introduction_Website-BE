@@ -13,7 +13,7 @@ public class Admin {
     @Id
     private Long studentId;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @MapsId
     @JoinColumn(name = "student_id")
     private User user;

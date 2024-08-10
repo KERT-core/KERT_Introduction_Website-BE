@@ -1,0 +1,29 @@
+### GET request
+GET localhost:8080/admin
+Content-Type: application/json
+
+### POST request
+POST localhost:8080/admin
+Content-Type: application/json
+
+{
+  "student_id": 2024123456,
+  "generation": "2022.1",
+  "role": "president"
+}
+
+### GET request
+GET localhost:8080/admin/2024123456
+
+### PUT request
+PUT localhost:8080/admin/2024123456
+Content-Type: application/json
+
+{
+  "student_id": 2024123456,
+  "generation": "2022.1",
+  "role": "vice-president"
+}
+
+### DELETE request
+DELETE localhost:8080/admin/2024123456
