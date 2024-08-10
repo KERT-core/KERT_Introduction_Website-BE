@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HistoryService {
@@ -25,9 +26,14 @@ public class HistoryService {
     }
 
     public History updateHistory(Long historyId, History historyDetails) {
-        History existingHistory = getHistoryById(historyId);
-        if (existingHistory != null) {
-            existingHistory.setHistory(historyDetails.getHistory()); // 이렇게 관련된 HistoryList를 업데이트합니다.
+        Optional<History> historyOptional = historyRepository.findById(historyId);
+        if (historyOptional.isPresent()) {
+            History existingHistory = historyOptional.get();
+            existingHistory.setYear(historyDetails.getYear());
+            existingHistory.setMonth(historyDetails.getMonth());
+            existingHistory.setDescription(historyDetails.getDescription());
+            existingHistory.setCreatedAt(historyDetails.getCreatedAt());
+            existingHistory.setUpdatedAt(historyDetails.getUpdatedAt());
             return historyRepository.save(existingHistory);
         }
         return null;

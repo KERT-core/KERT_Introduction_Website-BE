@@ -8,16 +8,18 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
+@Table(name = "`history`")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "`history`")
 public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long historyId;
 
+    @Column(name = "`year`")
     private int year;
+    @Column(name = "`month`")
     private int month;
     private String description;
 
