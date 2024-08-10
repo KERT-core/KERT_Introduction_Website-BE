@@ -1,5 +1,6 @@
 package com.kert.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class Admin {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @MapsId
     @JoinColumn(name = "student_id")
+    @JsonIgnore
     private User user;
 
     private String generation;
