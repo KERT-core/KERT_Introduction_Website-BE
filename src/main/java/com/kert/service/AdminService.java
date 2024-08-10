@@ -42,6 +42,7 @@ public class AdminService {
         if (admin != null) {
             admin.setGeneration(adminDetails.getGeneration());
             admin.setRole(adminDetails.getRole());
+            admin.setDescription(adminDetails.getDescription());
             return adminRepository.save(admin);
         }
 
