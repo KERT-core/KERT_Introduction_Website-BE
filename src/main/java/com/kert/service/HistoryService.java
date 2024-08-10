@@ -39,11 +39,7 @@ public class HistoryService {
         return null;
     }
 
-    public boolean deleteHistory(Long historyId) {
-        if (historyRepository.existsById(historyId)) {
-            historyRepository.deleteById(historyId);
-            return true;
-        }
-        return false;
+    public void deleteHistory(Long historyId) {
+        historyRepository.deleteById(historyId);
     }
 }

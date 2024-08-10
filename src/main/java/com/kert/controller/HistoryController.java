@@ -45,10 +45,8 @@ public class HistoryController {
 
     @DeleteMapping("/{historyId}")
     public ResponseEntity<Void> deleteHistory(@PathVariable Long historyId) {
-        boolean isDeleted = historyService.deleteHistory(historyId);
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        historyService.deleteHistory(historyId);
+
+        return ResponseEntity.noContent().build();
     }
 }
