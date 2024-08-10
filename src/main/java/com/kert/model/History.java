@@ -17,17 +17,13 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId;
 
-    @Column(name = "`year`")
     private int year;
-    @Column(name = "`month`")
     private int month;
     private String description;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at")
     private Date updatedAt;
 }
