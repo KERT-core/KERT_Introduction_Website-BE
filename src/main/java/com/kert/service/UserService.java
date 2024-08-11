@@ -21,6 +21,9 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        if (userRepository.existsById(user.getStudentId())) {
+            throw new IllegalArgumentException("Student with id " + user.getStudentId() + " already exists");
+        }
         return userRepository.save(user);
     }
 
