@@ -35,8 +35,8 @@ public class Post {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id", nullable = false)
-    private Admin admin;
+    @JoinColumn(name = "student_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
