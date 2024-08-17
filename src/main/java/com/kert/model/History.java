@@ -4,10 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "`history`")
 @Data
 @NoArgsConstructor
@@ -17,13 +21,16 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId;
 
+    @Column(name = "`year`")
     private int year;
+    @Column(name = "`month`")
     private int month;
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 }
