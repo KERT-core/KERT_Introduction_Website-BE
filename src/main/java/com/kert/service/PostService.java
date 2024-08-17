@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,8 +23,7 @@ public class PostService {
     }
 
     public Post getPostById(Long id) {
-        Optional<Post> post = postRepository.findById(id);
-        return post.orElseThrow(() -> new RuntimeException("Post not found with id " + id));
+        return postRepository.findById(id).orElse(null);
     }
 
     public List<Post> getPostsByTag(String tag) {
