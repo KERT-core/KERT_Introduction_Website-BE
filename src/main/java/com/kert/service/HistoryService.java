@@ -27,7 +27,6 @@ public class HistoryService {
         return historyRepository.save(history);
     }
 
-    @Transactional
     public History updateHistory(Long historyId, History historyDetails) {
         Optional<History> historyOptional = historyRepository.findById(historyId);
         if (historyOptional.isPresent()) {
