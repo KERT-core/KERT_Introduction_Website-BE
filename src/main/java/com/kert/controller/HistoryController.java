@@ -2,7 +2,7 @@ package com.kert.controller;
 
 import com.kert.model.History;
 import com.kert.service.HistoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/histories")
+@RequiredArgsConstructor
 public class HistoryController {
-    @Autowired
-    private HistoryService historyService;
+    private final HistoryService historyService;
 
     @PostMapping
     public ResponseEntity<History> createHistory(@RequestBody History history) {
@@ -46,7 +46,6 @@ public class HistoryController {
     @DeleteMapping("/{historyId}")
     public ResponseEntity<Void> deleteHistory(@PathVariable Long historyId) {
         historyService.deleteHistory(historyId);
-
         return ResponseEntity.noContent().build();
     }
 }

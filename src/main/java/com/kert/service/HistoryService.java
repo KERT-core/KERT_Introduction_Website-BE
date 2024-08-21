@@ -2,16 +2,18 @@ package com.kert.service;
 
 import com.kert.model.History;
 import com.kert.repository.HistoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class HistoryService {
-    @Autowired
-    private HistoryRepository historyRepository;
+    private final HistoryRepository historyRepository;
 
     public List<History> getAllHistories() {
         return historyRepository.findAll();
@@ -25,6 +27,7 @@ public class HistoryService {
         return historyRepository.save(history);
     }
 
+    @Transactional
     public History updateHistory(Long historyId, History historyDetails) {
         Optional<History> historyOptional = historyRepository.findById(historyId);
         if (historyOptional.isPresent()) {
@@ -32,7 +35,6 @@ public class HistoryService {
             existingHistory.setYear(historyDetails.getYear());
             existingHistory.setMonth(historyDetails.getMonth());
             existingHistory.setDescription(historyDetails.getDescription());
-            existingHistory.setCreatedAt(historyDetails.getCreatedAt());
             existingHistory.setUpdatedAt(historyDetails.getUpdatedAt());
             return historyRepository.save(existingHistory);
         }
