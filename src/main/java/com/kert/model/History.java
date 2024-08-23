@@ -25,7 +25,7 @@ public class History {
     private int year;
     @Column(name = "`month`")
     private int month;
-    private String description;
+    private String content;
 
     @CreatedDate
     @Column(updatable = false)

@@ -21,7 +21,7 @@ public class HistoryController {
         History history = new History();
         history.setYear(historyForm.getYear());
         history.setMonth(historyForm.getMonth());
-        history.setDescription(historyForm.getDescription());
+        history.setContent(historyForm.getContent());
         History createdHistory = historyService.createHistory(history);
         return ResponseEntity.ok(createdHistory);
     }
@@ -45,7 +45,7 @@ public class HistoryController {
         History historyDetails = new History();
         historyDetails.setYear(historyForm.getYear());
         historyDetails.setMonth(historyForm.getMonth());
-        historyDetails.setDescription(historyForm.getDescription());
+        historyDetails.setContent(historyForm.getContent());
         History updatedHistory = historyService.updateHistory(historyId, historyDetails);
         if (updatedHistory == null) {
             return ResponseEntity.notFound().build();
