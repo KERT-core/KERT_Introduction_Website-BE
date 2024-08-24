@@ -38,9 +38,6 @@ public class Post {
     @JoinColumn(name = "student_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
