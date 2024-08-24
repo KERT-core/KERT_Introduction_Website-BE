@@ -9,7 +9,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -37,9 +36,6 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private User user;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
 
     @CreatedDate
     @Column(updatable = false)
