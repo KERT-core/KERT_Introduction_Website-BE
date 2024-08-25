@@ -8,6 +8,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,6 +27,7 @@ public class Post {
     private Long id;
 
     @Column(length = 255, nullable = false)
+    @NotBlank(message = "Title is mandatory")
     private String title;
 
     @Column(length = 100)
@@ -31,10 +35,12 @@ public class Post {
 
     @Lob
     @Column(nullable = false)
+    @NotBlank(message = "Content is mandatory")
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
+    @NotNull(message = "User is mandatory")
     private User user;
 
     @CreatedDate
