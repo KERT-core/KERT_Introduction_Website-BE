@@ -1,22 +1,27 @@
 package com.kert.service;
 
+import com.kert.dto.PasswordDTO;
 import com.kert.model.Password;
 import com.kert.repository.PasswordRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PasswordService {
+    private final PasswordRepository passwordRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Autowired
-    private PasswordRepository passwordRepository;
+    public Password createPassword(PasswordDTO passwordDTO) {
+        String hashedPassword = passwordEncoder.encode(passwordDTO.getPassword());
 
-    public Password createPassword(Long userId, String hash) {
         Password password = new Password();
-        password.setUserId(userId);
-        password.setHash(hash);
+        password.setUserId(passwordDTO.getUserId());
+        password.setHash(hashedPassword);
+
         return passwordRepository.save(password);
     }
 
@@ -24,12 +29,17 @@ public class PasswordService {
         return passwordRepository.findByUserId(userId);
     }
 
-    public Password updatePassword(Long userId, String newHash) {
-        Optional<Password> existingPassword = passwordRepository.findByUserId(userId);
-        if (existingPassword.isPresent()) {
-            Password password = existingPassword.get();
-            password.setHash(newHash);
-            return passwordRepository.save(password);
+    public Password updatePassword(Long userId, PasswordDTO passwordDTO) {
+        Optional<Password> existingPasswordOptional = passwordRepository.findByUserId(userId);
+        if (existingPasswordOptional.isPresent()) {
+            Password existingPassword = existingPasswordOptional.get();
+            if (passwordEncoder.matches(passwordDTO.getOldPassword(), existingPassword.getHash())) {
+                String newHashedPassword = passwordEncoder.encode(passwordDTO.getPassword());
+                existingPassword.setHash(newHashedPassword);
+                return passwordRepository.save(existingPassword);
+            } else {
+                return null;
+            }
         }
         return null;
     }

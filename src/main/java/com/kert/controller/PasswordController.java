@@ -1,23 +1,26 @@
 package com.kert.controller;
 
+import com.kert.dto.PasswordDTO;
 import com.kert.model.Password;
 import com.kert.service.PasswordService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/passwords")
 public class PasswordController {
-
-    @Autowired
-    private PasswordService passwordService;
+    private final PasswordService passwordService;
 
     @PostMapping
-    public ResponseEntity<Password> createPassword(@RequestBody Password password) {
-        Password createdPassword = passwordService.createPassword(password.getUserId(), password.getHash());
+    public ResponseEntity<Password> createPassword(@Valid @RequestBody PasswordDTO passwordDTO) {
+        Password createdPassword = passwordService.createPassword(passwordDTO);
         return ResponseEntity.ok(createdPassword);
     }
 
@@ -27,15 +30,17 @@ public class PasswordController {
         return password.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
     @PutMapping("/{user_id}")
-    public ResponseEntity<Password> updatePassword(@PathVariable("user_id") Long userId, @RequestBody Password password) {
-        Password updatedPassword = passwordService.updatePassword(userId, password.getHash());
+    public ResponseEntity<Password> updatePassword(@PathVariable("user_id") Long userId, @RequestBody PasswordDTO passwordDTO) {
+        Password updatedPassword = passwordService.updatePassword(userId, passwordDTO);
         if (updatedPassword != null) {
             return ResponseEntity.ok(updatedPassword);
         }
         return ResponseEntity.notFound().build();
     }
 
+    @Transactional
     @DeleteMapping("/{user_id}")
     public ResponseEntity<Void> deletePassword(@PathVariable("user_id") Long userId) {
         passwordService.deletePassword(userId);
