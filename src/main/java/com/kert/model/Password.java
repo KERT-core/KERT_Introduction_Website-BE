@@ -20,11 +20,7 @@ public class Password {
     @Id
     @Column(nullable = false)
     private Long userId;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "student_id")
-    private User user;
-
+    
     @JsonIgnore
     @Column(nullable = false)
     private String hash;
