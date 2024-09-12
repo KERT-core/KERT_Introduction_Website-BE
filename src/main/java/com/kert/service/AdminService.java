@@ -4,18 +4,16 @@ import com.kert.model.Admin;
 import com.kert.model.User;
 import com.kert.repository.AdminRepository;
 import com.kert.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdminService {
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final UserRepository userRepository;
 
     public List<Admin> getAllAdmins() {
         return adminRepository.findAll();

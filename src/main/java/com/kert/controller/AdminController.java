@@ -2,7 +2,7 @@ package com.kert.controller;
 
 import com.kert.model.Admin;
 import com.kert.service.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
-    @Autowired
-    private AdminService adminService;
+    private final AdminService adminService;
 
     @GetMapping
     public List<Admin> getAllAdmins() {
