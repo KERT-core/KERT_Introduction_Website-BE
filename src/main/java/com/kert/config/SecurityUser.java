@@ -18,14 +18,15 @@ public class SecurityUser implements UserDetails {
         this.admin = admin;
         this.password = password;
     }
-
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "ROLE_USER"; 
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         if (admin != null) {
-            role = "ROLE_ADMIN";
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+        return authorities;
     }
 
     @Override

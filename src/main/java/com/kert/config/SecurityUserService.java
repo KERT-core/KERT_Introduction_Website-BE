@@ -33,4 +33,9 @@ public class SecurityUserService {
 
         return new SecurityUser(user, admin, password);
     }
+    
+    public boolean isAdminById(Long studentId) {
+        Admin admin = adminRepository.findById(studentId).orElse(null);
+        return admin != null;
+    }
 }
