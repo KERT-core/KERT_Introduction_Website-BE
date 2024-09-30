@@ -13,8 +13,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-
-import com.kert.model.Admin;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.kert.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -26,12 +27,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final AdminRepository adminRepository;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -62,6 +64,8 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.disable())  // 프레임 옵션 비활성화
                 );;
+            http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -89,6 +93,11 @@ public class SecurityConfig {
         };
     }
 
+    @Bean
+    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
     private boolean isAdmin(OidcUserAuthority oidcUserAuthority) {
         Long userId = Long.valueOf((String) oidcUserAuthority.getAttributes().get("sub"));
         return checkIfUserIsAdmin(userId);
@@ -98,9 +107,9 @@ public class SecurityConfig {
         Long userId = Long.valueOf((String) oauth2UserAuthority.getAttributes().get("sub"));
         return checkIfUserIsAdmin(userId);
     }
-    
+
     private boolean checkIfUserIsAdmin(Long userId) {
-        Admin admin = adminRepository.findById(userId).orElse(null);
-        return admin != null;
+        return adminRepository.findById(userId).isPresent();
     }
+
 }
