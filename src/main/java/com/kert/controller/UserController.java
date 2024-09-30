@@ -6,6 +6,7 @@ import com.kert.dto.PasswordDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.kert.config.JwtTokenProvider;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -43,11 +45,22 @@ public class UserController {
         }
     }
 
+    // @PostMapping("/login")
+    // public ResponseEntity<String> loginUser(@RequestBody User user, @RequestBody PasswordDTO passwordDTO) {
+    //     boolean success = userService.login(user.getStudentId(), passwordDTO.getPassword());
+    //     if (success) {
+    //         return ResponseEntity.ok("Login successful");
+    //     } else {
+    //         return ResponseEntity.status(401).body("Login failed");
+    //     }
+    // }
+
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody User user, @RequestBody PasswordDTO passwordDTO) {
         boolean success = userService.login(user.getStudentId(), passwordDTO.getPassword());
         if (success) {
-            return ResponseEntity.ok("Login successful");
+            String token = jwtTokenProvider.generateToken(user.getStudentId());
+            return ResponseEntity.ok("Bearer " + token);
         } else {
             return ResponseEntity.status(401).body("Login failed");
         }
