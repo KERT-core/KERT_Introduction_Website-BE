@@ -40,6 +40,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Generate Environment Variables File
+      run: |
+          echo "JWT_SECRET=$JWT_SECRET" >> .env
+      env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
