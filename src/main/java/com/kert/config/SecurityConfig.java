@@ -8,24 +8,108 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.kert.repository.AdminRepository;
+import lombok.RequiredArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final AdminRepository adminRepository;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // api 테스트용 인증 비활성화 꼭 추후 수정할 것!!!
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .anyRequest().permitAll()
-            ).sessionManagement(session -> session
-        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));  
+            .requestMatchers("/", "/auth/**", "/oauth2/**", "/login", "/signup").permitAll()  
+            .requestMatchers("/board", "/articles/**", "/mypage", "/dashboard/users").authenticated()
+            .requestMatchers("/dashboard/admin").hasRole("ADMIN")
+            .requestMatchers("/dashboard/**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers("/h2-console/**").permitAll()
+            .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard")
+                .permitAll()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userAuthoritiesMapper(grantedAuthoritiesMapper())
+                )
+            )
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            )
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.disable())  // 프레임 옵션 비활성화
+                );;
+            http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
+    private GrantedAuthoritiesMapper grantedAuthoritiesMapper() {
+        return (authorities) -> {
+            Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+
+            authorities.forEach(authority -> {
+                if (authority instanceof OidcUserAuthority) {
+                    mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    if (isAdmin((OidcUserAuthority) authority)) {
+                        mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    }
+                } else if (authority instanceof OAuth2UserAuthority) {
+                    mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    if (isAdmin((OAuth2UserAuthority) authority)) {
+                        mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    }
+                } else {
+                    mappedAuthorities.add(authority);
+                }
+            });
+
+            return mappedAuthorities;
+        };
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    private boolean isAdmin(OidcUserAuthority oidcUserAuthority) {
+        Long userId = Long.valueOf((String) oidcUserAuthority.getAttributes().get("sub"));
+        return checkIfUserIsAdmin(userId);
+    }
+    
+    private boolean isAdmin(OAuth2UserAuthority oauth2UserAuthority) {
+        Long userId = Long.valueOf((String) oauth2UserAuthority.getAttributes().get("sub"));
+        return checkIfUserIsAdmin(userId);
+    }
+
+    private boolean checkIfUserIsAdmin(Long userId) {
+        return adminRepository.findById(userId).isPresent();
+    }
+
 }
