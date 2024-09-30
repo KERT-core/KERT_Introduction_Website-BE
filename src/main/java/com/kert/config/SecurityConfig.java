@@ -41,6 +41,7 @@ public class SecurityConfig {
             .requestMatchers("/board", "/articles/**", "/mypage", "/dashboard/users").authenticated()
             .requestMatchers("/dashboard/admin").hasRole("ADMIN")
             .requestMatchers("/dashboard/**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers("/h2-console/**").permitAll()
             .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -57,7 +58,10 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            );
+            )
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.disable())  // 프레임 옵션 비활성화
+                );;
         return http.build();
     }
 

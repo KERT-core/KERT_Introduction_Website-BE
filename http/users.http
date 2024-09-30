@@ -32,3 +32,49 @@ Content-Type: application/json
 
 ### DELETE request
 DELETE localhost:8080/users/2024123456
+
+### Signup
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "studentId": 1,
+  "name": "John Doe",
+  "password": "password123"
+}
+
+###
+
+### Login
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "studentId": 1,
+  "password": "password123"
+}
+
+###
+
+### Get All Users
+GET http://localhost:8080/users
+
+###
+
+### Get User by ID
+GET http://localhost:8080/users/1
+
+###
+
+### Update User
+PUT http://localhost:8080/users/1
+Content-Type: application/json
+
+{
+  "name": "John Doe Updated"
+}
+
+###
+
+### Delete User
+DELETE http://localhost:8080/users/1
