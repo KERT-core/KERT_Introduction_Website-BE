@@ -38,8 +38,12 @@ POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-  "studentId": 1,
-  "name": "John Doe",
+  "studentId": 2024123456,
+  "name": "홍길동",
+  "email": "example@knu.ac.kr",
+  "profilePicture": "https://example.com/knu.jpg",
+  "generation": "2022.1",
+  "major": "asdf",
   "password": "password123"
 }
 
@@ -50,7 +54,7 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "studentId": 1,
+  "studentId": 2024123456,
   "password": "password123"
 }
 

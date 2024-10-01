@@ -2,6 +2,7 @@ package com.kert.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,21 +40,21 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/", "/auth/**", "/oauth2/**", "/login", "/signup").permitAll()  
-            .requestMatchers("/board", "/articles/**", "/mypage", "/dashboard/users").authenticated()
-            .requestMatchers("/dashboard/admin").hasRole("ADMIN")
-            .requestMatchers("/dashboard/**").hasAnyRole("USER", "ADMIN")
-                            .requestMatchers("/h2-console/**").permitAll()
+            .requestMatchers("/", "/auth/**", "/oauth2/**", "/users/login", "/users/signup").permitAll()
+            .requestMatchers("/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.GET,"/users/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers(HttpMethod.GET, "/posts", "/histories").permitAll()
+            .requestMatchers("/h2-console/**").permitAll()
             .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/dashboard")
+                .loginPage("/")
+                .defaultSuccessUrl("/users")
                 .permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
+                .loginPage("/")
+                .defaultSuccessUrl("/users", true)
                 .userInfoEndpoint(userInfo -> userInfo
                     .userAuthoritiesMapper(grantedAuthoritiesMapper())
                 )
@@ -61,9 +62,9 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             )
-                .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.disable())  // 프레임 옵션 비활성화
-                );;
+            .headers(headers -> headers
+                    .frameOptions(frameOptions -> frameOptions.disable())
+            );
             http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
