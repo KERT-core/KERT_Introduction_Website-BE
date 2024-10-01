@@ -2,7 +2,8 @@ package com.kert.service;
 
 import com.kert.model.User;
 import com.kert.repository.UserRepository;
-import com.kert.dto.PasswordDTO;
+// import com.kert.dto.PasswordDTO;
+import com.kert.dto.SignUpDTO;
 import com.kert.model.Password;
 import com.kert.repository.PasswordRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,13 +29,24 @@ public class UserService {
     }
 
 
-    public User createUser(User user,PasswordDTO passwordDTO) {
+    public User createUser(SignUpDTO signUpDTO) {
+        User user = new User();
+
+        user.setStudentId(signUpDTO.getStudentId());
+        user.setEmail(signUpDTO.getEmail());
+        user.setName(signUpDTO.getUsername());
+        user.setProfilePicture(signUpDTO.getProfilePicture());
+        user.setGeneration(signUpDTO.getGeneration());
+        user.setMajor(signUpDTO.getMajor());
+
+        System.out.println(user);
+
         if (userRepository.existsById(user.getStudentId())) {
             throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
         }
         Password password = new Password();
         password.setUserId(user.getStudentId());
-        password.setHash(passwordEncoder.encode(passwordDTO.getPassword()));
+        password.setHash(passwordEncoder.encode(signUpDTO.getPassword()));
         passwordRepository.save(password);
 
         return userRepository.save(user);
