@@ -17,11 +17,16 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import com.kert.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -41,7 +46,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
             .requestMatchers("/", "/auth/**", "/oauth2/**", "/users/login", "/users/signup").permitAll()
-            .requestMatchers("/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.POST, "/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.GET,"/users/**").hasAnyRole("USER", "ADMIN")
             .requestMatchers(HttpMethod.GET, "/posts", "/histories").permitAll()
             .requestMatchers("/h2-console/**").permitAll()
@@ -60,7 +67,8 @@ public class SecurityConfig {
                 )
             )
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                // .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .headers(headers -> headers
                     .frameOptions(frameOptions -> frameOptions.disable())
@@ -68,6 +76,19 @@ public class SecurityConfig {
             http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     private GrantedAuthoritiesMapper grantedAuthoritiesMapper() {
