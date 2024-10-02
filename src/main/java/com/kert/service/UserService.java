@@ -34,7 +34,7 @@ public class UserService {
 
         user.setStudentId(signUpDTO.getStudentId());
         user.setEmail(signUpDTO.getEmail());
-        user.setName(signUpDTO.getUsername());
+        user.setName(signUpDTO.getName());
         user.setProfilePicture(signUpDTO.getProfilePicture());
         user.setGeneration(signUpDTO.getGeneration());
         user.setMajor(signUpDTO.getMajor());
