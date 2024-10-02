@@ -22,7 +22,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Post>> getPostsByTag(@RequestParam(required = false) String tag) {
+    public ResponseEntity<List<Post>> getPostsByTag(@RequestParam(required = false, name = "tag") String tag) {
         List<Post> posts;
         if (tag != null) {
             posts = postService.getPostsByTag(tag);
