@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 public class SignUpDTO {
     private Long studentId;
-    private String username;
+    private String name;
     private String password;
     private String email;
     private String profilePicture;
