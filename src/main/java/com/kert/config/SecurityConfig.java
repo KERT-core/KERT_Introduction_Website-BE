@@ -46,13 +46,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/", "/auth/**", "/oauth2/**", "/users/login", "/users/signup").permitAll()
+            .requestMatchers("/", "/auth/**", "/users/login", "/users/signup").permitAll()
             .requestMatchers(HttpMethod.POST, "/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.PUT, "/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/admin/**", "/posts/**", "/histories/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.GET,"/users/**").hasAnyRole("USER", "ADMIN")
             .requestMatchers(HttpMethod.GET, "/posts", "/histories").permitAll()
-            .requestMatchers("/h2-console/**").permitAll()
+//            .requestMatchers("/h2-console/**").permitAll()
             .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -60,13 +60,13 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/users")
                 .permitAll()
             )
-            .oauth2Login(oauth2 -> oauth2
-                .loginPage("/")
-                .defaultSuccessUrl("/users", true)
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userAuthoritiesMapper(grantedAuthoritiesMapper())
-                )
-            )
+//            .oauth2Login(oauth2 -> oauth2
+//                .loginPage("/")
+//                .defaultSuccessUrl("/users", true)
+//                .userInfoEndpoint(userInfo -> userInfo
+//                    .userAuthoritiesMapper(grantedAuthoritiesMapper())
+//                )
+//            )
             .sessionManagement(session -> session
                 // .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
