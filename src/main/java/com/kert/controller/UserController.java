@@ -24,8 +24,22 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<?> getAllUsers(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+
+            Long currentUserId = jwtTokenProvider.getUserIdFromJWT(token);
+            boolean isAdmin = adminService.getAdminByStudentId(currentUserId) != null;
+            if (isAdmin) {
+                List<User> users = userService.getAllUsers();
+                return ResponseEntity.ok(users);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/{studentId}")
@@ -68,20 +82,25 @@ public class UserController {
     }
 
     @PutMapping("/{studentId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long studentId, @RequestBody User userDetails) {
-        User updatedUser = userService.updateUser(studentId, userDetails);
+    public ResponseEntity<User> updateUser(@PathVariable Long studentId, @RequestHeader("Authorization") String authHeader, @RequestBody User userDetails) {
+        String token = authHeader.replace("Bearer ", "");
 
-        if (updatedUser == null) {
-            return ResponseEntity.notFound().build();
+        Long currentUserId = jwtTokenProvider.getUserIdFromJWT(token);
+        boolean isAdmin = adminService.getAdminByStudentId(currentUserId) != null;
+        if (isAdmin || currentUserId.equals(studentId)) {
+            User updatedUser = userService.updateUser(studentId, userDetails);
+            if (updatedUser == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-
-        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{studentId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long studentId) {
         userService.deleteUser(studentId);
-
         return ResponseEntity.noContent().build();
     }
 }
