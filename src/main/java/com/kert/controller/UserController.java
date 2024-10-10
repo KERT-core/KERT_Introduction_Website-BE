@@ -1,10 +1,12 @@
 package com.kert.controller;
 
 import com.kert.model.User;
+import com.kert.service.AdminService;
 import com.kert.service.UserService;
 import com.kert.dto.SignUpDTO;
 import com.kert.dto.LoginDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.kert.config.JwtTokenProvider;
@@ -18,6 +20,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AdminService adminService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping
@@ -26,14 +29,21 @@ public class UserController {
     }
 
     @GetMapping("/{studentId}")
-    public ResponseEntity<User> getUserById(@PathVariable("studentId") Long studentId) {
-        User user = userService.getUserById(studentId);
+    public ResponseEntity<User> getUserById(@PathVariable("studentId") Long studentId, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Long currentUserId = jwtTokenProvider.getUserIdFromJWT(token);
 
+        User user = userService.getUserById(studentId);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(user);
+        boolean isAdmin = adminService.getAdminByStudentId(currentUserId) != null;
+        if (isAdmin || currentUserId.equals(studentId)) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @PostMapping("/signup")
