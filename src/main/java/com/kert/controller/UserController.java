@@ -5,6 +5,7 @@ import com.kert.service.AdminService;
 import com.kert.service.UserService;
 import com.kert.dto.SignUpDTO;
 import com.kert.dto.LoginDTO;
+import com.kert.dto.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,13 +72,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<TokenResponse> loginUser(@RequestBody LoginDTO loginDTO) {
         boolean success = userService.login(loginDTO.getStudentId(), loginDTO.getPassword());
         if (success) {
-            String token = jwtTokenProvider.generateToken(loginDTO.getStudentId());
-            return ResponseEntity.ok("Bearer " + token);
+            String accessToken = jwtTokenProvider.generateToken(loginDTO.getStudentId());
+            String refreshToken = jwtTokenProvider.generateRefreshToken(loginDTO.getStudentId());
+            return ResponseEntity.ok(new TokenResponse("Bearer " + accessToken, refreshToken));
         } else {
-            return ResponseEntity.status(401).body("Login failed");
+            return ResponseEntity.status(401).body(null);
         }
     }
 
