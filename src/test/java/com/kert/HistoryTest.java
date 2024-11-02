@@ -16,8 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -61,7 +64,13 @@ public class HistoryTest {
     @Test
     @DisplayName("get all histories")
     public void getAllHistories() throws Exception {
-        mockMvc.perform(get("/histories")).andExpect(status().isOk());
+        when(historyService.getAllHistories()).thenReturn(List.of(testHistory));
+
+        mockMvc.perform(get("/histories")).andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].year").value(testHistory.getYear()))
+                .andExpect(jsonPath("$[0].month").value(testHistory.getMonth()))
+                .andExpect(jsonPath("$[0].content").value(testHistory.getContent()));
     }
 
     @Test
@@ -69,7 +78,10 @@ public class HistoryTest {
     public void getHistoryById() throws Exception {
         when(historyService.getHistoryById(1L)).thenReturn(testHistory);
 
-        mockMvc.perform(get("/histories/1")).andExpect(status().isOk());
+        mockMvc.perform(get("/histories/1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.year").value(testHistory.getYear()))
+                .andExpect(jsonPath("$.month").value(testHistory.getMonth()))
+                .andExpect(jsonPath("$.content").value(testHistory.getContent()));
     }
 
     @Test
@@ -86,7 +98,10 @@ public class HistoryTest {
     public void createHistoryWithAdmin() throws Exception {
         when(historyService.createHistory(testHistory)).thenReturn(testHistory);
 
-        mockMvc.perform(post("/histories").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk());
+        mockMvc.perform(post("/histories").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.year").value(testHistory.getYear()))
+                .andExpect(jsonPath("$.month").value(testHistory.getMonth()))
+                .andExpect(jsonPath("$.content").value(testHistory.getContent()));
     }
 
     @Test
@@ -103,7 +118,10 @@ public class HistoryTest {
     public void updateHistoryWithAdmin() throws Exception {
         when(historyService.updateHistory(1L, testHistory)).thenReturn(testHistory);
 
-        mockMvc.perform(put("/histories/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk());
+        mockMvc.perform(put("/histories/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.year").value(testHistory.getYear()))
+                .andExpect(jsonPath("$.month").value(testHistory.getMonth()))
+                .andExpect(jsonPath("$.content").value(testHistory.getContent()));
     }
 
     @Test
