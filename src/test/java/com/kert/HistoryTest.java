@@ -74,7 +74,7 @@ public class HistoryTest {
 
     @Test
     @DisplayName("create history with not_admin")
-    public void createHistoryWithNot_admin() throws Exception {
+    public void createHistoryWithNotAdmin() throws Exception {
         when(historyService.createHistory(testHistory)).thenReturn(testHistory);
 
         mockMvc.perform(post("/histories").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isForbidden());
@@ -91,7 +91,7 @@ public class HistoryTest {
 
     @Test
     @DisplayName("update history with not_admin")
-    public void updateHistoryWithNot_admin() throws Exception {
+    public void updateHistoryWithNotAdmin() throws Exception {
         when(historyService.updateHistory(1L, testHistory)).thenReturn(testHistory);
 
         mockMvc.perform(put("/histories/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isForbidden());
@@ -108,7 +108,7 @@ public class HistoryTest {
 
     @Test
     @DisplayName("delete history with not_admin")
-    public void deleteHistoryWithNot_admin() throws Exception {
+    public void deleteHistoryWithNotAdmin() throws Exception {
         mockMvc.perform(delete("/histories/1")).andExpect(status().isForbidden());
     }
 
