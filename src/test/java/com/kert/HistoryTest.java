@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(SecurityConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HistoryTest {
     @Autowired
     private MockMvc mockMvc;
@@ -33,15 +34,24 @@ public class HistoryTest {
     @MockBean
     private HistoryService historyService;
 
-    private final String testRequestBody = """
-                {
-                    "year" : 2001,
-                    "month" : 12,
-                    "content" : "test"
-                }
-                """;
+    private String testRequestBody;
 
     private final History testHistory = new History();
+
+    @BeforeAll
+    public void setUp() {
+        testHistory.setYear(2001);
+        testHistory.setMonth(12);
+        testHistory.setContent("test");
+
+        testRequestBody= """
+                {
+                    "year" : %d,
+                    "month" : %d,
+                    "content" : "%s"
+                }
+                """.formatted(testHistory.getYear(), testHistory.getMonth(), testHistory.getContent());
+    }
 
     @BeforeEach
     public void setMockMvc() {
@@ -91,10 +101,6 @@ public class HistoryTest {
     @DisplayName("update history with admin")
     @WithMockUser(roles = "ADMIN")
     public void updateHistoryWithAdmin() throws Exception {
-        testHistory.setYear(2001);
-        testHistory.setMonth(12);
-        testHistory.setContent("test");
-
         when(historyService.updateHistory(1L, testHistory)).thenReturn(testHistory);
 
         mockMvc.perform(put("/histories/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk());
