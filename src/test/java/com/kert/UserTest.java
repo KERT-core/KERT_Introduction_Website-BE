@@ -6,7 +6,6 @@ import com.kert.config.SecurityUserService;
 import com.kert.model.Admin;
 import com.kert.model.Password;
 import com.kert.model.User;
-import com.kert.repository.UserRepository;
 import com.kert.service.AdminService;
 import com.kert.service.UserService;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -16,18 +15,17 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.crypto.SecretKey;
 import java.util.*;
@@ -151,7 +149,7 @@ public class UserTest {
     public void getUserByIdWithSelf() throws Exception {
         when(userService.getUserById(testUser.getStudentId())).thenReturn(testUser);
 
-        mockMvc.perform(get("/users/1").header("Authorization", "Bearer " + userJwtToken)).andExpect(status().isOk());
+        mockMvc.perform(get("/users/{studentId}", testUser.getStudentId()).header("Authorization", "Bearer " + userJwtToken)).andExpect(status().isOk());
     }
 
     @Test
@@ -169,7 +167,7 @@ public class UserTest {
         when(securityUserService.loadUserById(testAdmin.getStudentId())).thenReturn(new SecurityUser(testAdmin, new Admin(), new Password(), Set.of()));
         when(adminService.getAdminByStudentId(testAdmin.getStudentId())).thenReturn(new Admin());
 
-        mockMvc.perform(get("/users/1").header("Authorization", "Bearer " + adminJwtToken)).andExpect(status().isOk())
+        mockMvc.perform(get("/users/{studentId}", testUser.getStudentId()).header("Authorization", "Bearer " + adminJwtToken)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.student_id").value(testUser.getStudentId()))
                 .andExpect(jsonPath("$.name").value(testUser.getName()))
                 .andExpect(jsonPath("$.email").value(testUser.getEmail()))
@@ -179,12 +177,79 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("delete user by id with admin")
+    @DisplayName("update user with self")
+    public void updateUserByIdWithSelf() throws Exception {
+        when(userService.updateUser(testUser.getStudentId(), testUser)).thenReturn(testUser);
+
+        //request body의 항목이 testUser와 정확히 일치해야 위의 mocking이 적용되어 여기선 student_id까지 body에 추가함
+        String requestBody= """
+                {
+                    "name": "%s",
+                    "email": "%s",
+                    "profile_picture": "%s",
+                    "student_id": "%s",
+                    "generation": "%s",
+                    "major": "%s"
+                }
+                """.formatted(testUser.getName(),testUser.getEmail(),testUser.getProfilePicture(),testUser.getStudentId(),testUser.getGeneration(),testUser.getMajor());
+
+        mockMvc.perform(put("/users/{studentId}", testUser.getStudentId()).header("Authorization", "Bearer " + userJwtToken).contentType(MediaType.APPLICATION_JSON).content(requestBody)).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("update user with another")
+    public void updateUserByIdWithAnother() throws Exception {
+        //request body의 항목이 testUser와 정확히 일치해야 위의 mocking이 적용되어 여기선 student_id까지 body에 추가함
+        String requestBody= """
+                {
+                    "name": "%s",
+                    "email": "%s",
+                    "profile_picture": "%s",
+                    "student_id": "%s",
+                    "generation": "%s",
+                    "major": "%s"
+                }
+                """.formatted(testUser.getName(),testUser.getEmail(),testUser.getProfilePicture(),testUser.getStudentId(),testUser.getGeneration(),testUser.getMajor());
+
+        mockMvc.perform(put("/users/2").header("Authorization", "Bearer " + userJwtToken).contentType(MediaType.APPLICATION_JSON).content(requestBody)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("update user with admin")
+    public void updateUserByIdWithAdmin() throws Exception {
+        when(userService.updateUser(testUser.getStudentId(), testUser)).thenReturn(testUser);
+        when(securityUserService.loadUserById(testAdmin.getStudentId())).thenReturn(new SecurityUser(testAdmin, new Admin(), new Password(), Set.of()));
+        when(adminService.getAdminByStudentId(testAdmin.getStudentId())).thenReturn(new Admin());
+        
+        //request body의 항목이 testUser와 정확히 일치해야 위의 mocking이 적용되어 여기선 student_id까지 body에 추가함
+        String requestBody= """
+                {
+                    "name": "%s",
+                    "email": "%s",
+                    "profile_picture": "%s",
+                    "student_id": "%s",
+                    "generation": "%s",
+                    "major": "%s"
+                }
+                """.formatted(testUser.getName(),testUser.getEmail(),testUser.getProfilePicture(),testUser.getStudentId(),testUser.getGeneration(),testUser.getMajor());
+
+        mockMvc.perform(put("/users/{studentId}", testUser.getStudentId()).header("Authorization", "Bearer " + adminJwtToken).contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("delete user with admin")
     public void deleteUserByIdWithAdmin() throws Exception {
         when(userService.getUserById(testUser.getStudentId())).thenReturn(testUser);
         when(securityUserService.loadUserById(testAdmin.getStudentId())).thenReturn(new SecurityUser(testAdmin, new Admin(), new Password(), Set.of()));
         when(adminService.getAdminByStudentId(testAdmin.getStudentId())).thenReturn(new Admin());
 
-        mockMvc.perform(delete("/users/1").header("Authorization", "Bearer " + adminJwtToken)).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/users/{studentId}", testUser.getStudentId()).header("Authorization", "Bearer " + adminJwtToken)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("delete user with not_admin")
+    public void deleteUserByIdWithNotAdmin() throws Exception {
+        mockMvc.perform(delete("/users/", testUser.getStudentId()).header("Authorization", "Bearer " + userJwtToken)).andExpect(status().isForbidden());
     }
 }
