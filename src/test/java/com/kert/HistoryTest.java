@@ -40,6 +40,7 @@ public class HistoryTest {
     private String testRequestBody;
 
     private final History testHistory = new History();
+    private final Long testHistoryId = 1L;
 
     @BeforeAll
     public void setUp() {
@@ -76,9 +77,9 @@ public class HistoryTest {
     @Test
     @DisplayName("get history by id")
     public void getHistoryById() throws Exception {
-        when(historyService.getHistoryById(1L)).thenReturn(testHistory);
+        when(historyService.getHistoryById(testHistoryId)).thenReturn(testHistory);
 
-        mockMvc.perform(get("/histories/1")).andExpect(status().isOk())
+        mockMvc.perform(get("/histories/{historyId}", testHistoryId)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.year").value(testHistory.getYear()))
                 .andExpect(jsonPath("$.month").value(testHistory.getMonth()))
                 .andExpect(jsonPath("$.content").value(testHistory.getContent()));
@@ -107,18 +108,18 @@ public class HistoryTest {
     @Test
     @DisplayName("update history with not_admin")
     public void updateHistoryWithNotAdmin() throws Exception {
-        when(historyService.updateHistory(1L, testHistory)).thenReturn(testHistory);
+        when(historyService.updateHistory(testHistoryId, testHistory)).thenReturn(testHistory);
 
-        mockMvc.perform(put("/histories/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isForbidden());
+        mockMvc.perform(put("/histories/{historyId}", testHistoryId).contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("update history with admin")
     @WithMockUser(roles = "ADMIN")
     public void updateHistoryWithAdmin() throws Exception {
-        when(historyService.updateHistory(1L, testHistory)).thenReturn(testHistory);
+        when(historyService.updateHistory(testHistoryId, testHistory)).thenReturn(testHistory);
 
-        mockMvc.perform(put("/histories/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk())
+        mockMvc.perform(put("/histories/{historyId}", testHistoryId).contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.year").value(testHistory.getYear()))
                 .andExpect(jsonPath("$.month").value(testHistory.getMonth()))
                 .andExpect(jsonPath("$.content").value(testHistory.getContent()));
@@ -127,13 +128,13 @@ public class HistoryTest {
     @Test
     @DisplayName("delete history with not_admin")
     public void deleteHistoryWithNotAdmin() throws Exception {
-        mockMvc.perform(delete("/histories/1")).andExpect(status().isForbidden());
+        mockMvc.perform(delete("/histories/{historyId}", testHistoryId)).andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("delete history with admin")
     @WithMockUser(roles = "ADMIN")
     public void deleteHistoryWithAdmin() throws Exception {
-        mockMvc.perform(delete("/histories/1")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/histories/{historyId}", testHistoryId)).andExpect(status().isNoContent());
     }
 }
