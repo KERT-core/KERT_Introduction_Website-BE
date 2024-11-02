@@ -86,18 +86,18 @@ public class AdminTest {
     @Test
     @DisplayName("get admin by id with not_admin")
     public void getAdminByIdWithNotAdmin() throws Exception {
-        when(adminService.getAdminByStudentId(1L)).thenReturn(testAdmin);
+        when(adminService.getAdminByStudentId(testAdmin.getStudentId())).thenReturn(testAdmin);
 
-        mockMvc.perform(get("/admin/1")).andExpect(status().isForbidden());
+        mockMvc.perform(get("/admin/{studentId}", testAdmin.getStudentId())).andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("get admin by id with not_admin")
     @WithMockUser(roles = "ADMIN")
     public void getAdminByIdWithAdmin() throws Exception {
-        when(adminService.getAdminByStudentId(1L)).thenReturn(testAdmin);
+        when(adminService.getAdminByStudentId(testAdmin.getStudentId())).thenReturn(testAdmin);
 
-        mockMvc.perform(get("/admin/1")).andExpect(status().isOk())
+        mockMvc.perform(get("/admin/{studentId}", testAdmin.getStudentId())).andExpect(status().isOk())
                 .andExpect(jsonPath("$.student_id").value(testAdmin.getStudentId()))
                 .andExpect(jsonPath("$.generation").value(testAdmin.getGeneration()))
                 .andExpect(jsonPath("$.role").value(testAdmin.getRole()))
@@ -128,18 +128,18 @@ public class AdminTest {
     @Test
     @DisplayName("update admin with not_admin")
     public void updateAdminWithNotAdmin() throws Exception {
-        when(adminService.updateAdmin(1L, testAdmin)).thenReturn(testAdmin);
+        when(adminService.updateAdmin(testAdmin.getStudentId(), testAdmin)).thenReturn(testAdmin);
 
-        mockMvc.perform(put("/admin/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isForbidden());
+        mockMvc.perform(put("/admin/{studentId}", testAdmin.getStudentId()).contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("update admin with admin")
     @WithMockUser(roles = "ADMIN")
     public void updateAdminWithAdmin() throws Exception {
-        when(adminService.updateAdmin(1L, testAdmin)).thenReturn(testAdmin);
+        when(adminService.updateAdmin(testAdmin.getStudentId(), testAdmin)).thenReturn(testAdmin);
 
-        mockMvc.perform(put("/admin/1").contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk())
+        mockMvc.perform(put("/admin/{studentId}", testAdmin.getStudentId()).contentType(MediaType.APPLICATION_JSON).content(testRequestBody)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.student_id").value(testAdmin.getStudentId()))
                 .andExpect(jsonPath("$.generation").value(testAdmin.getGeneration()))
                 .andExpect(jsonPath("$.role").value(testAdmin.getRole()))
@@ -149,13 +149,13 @@ public class AdminTest {
     @Test
     @DisplayName("delete admin with not_admin")
     public void deleteAdminWithNotAdmin() throws Exception {
-        mockMvc.perform(delete("/admin/1")).andExpect(status().isForbidden());
+        mockMvc.perform(delete("/admin/{studentId}", testAdmin.getStudentId())).andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("delete admin with not_admin")
     @WithMockUser(roles = "ADMIN")
     public void deleteAdminWithAdmin() throws Exception {
-        mockMvc.perform(delete("/admin/1")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/admin/{studentId}", testAdmin.getStudentId())).andExpect(status().isNoContent());
     }
 }
