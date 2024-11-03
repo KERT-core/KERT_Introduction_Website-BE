@@ -33,12 +33,15 @@ public class Post {
     @Column(length = 100)
     private String tag;
 
+    @Column(nullable = false)
+    private String description;
+
     @Lob
     @Column(nullable = false)
     @NotBlank(message = "Content is mandatory")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "student_id", nullable = false)
     @NotNull(message = "User is mandatory")
     private User user;
