@@ -3,12 +3,12 @@ package com.kert.dto;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefreshTokenRequest {
-    @NotNull
+    @NotBlank
     private String refreshToken;
 }
