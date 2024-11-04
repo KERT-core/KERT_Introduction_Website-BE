@@ -41,7 +41,7 @@ public class PostService {
 
     public Page<Post> searchPosts(String search, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        if (search != null && !search.isEmpty()) {
+        if (search != null && !search.trim().isEmpty()) {
             return postRepository.findByTitleContainingOrTagContaining(search, search, pageable);
         } else {
             return postRepository.findAll(pageable);
