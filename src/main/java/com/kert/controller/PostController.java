@@ -27,7 +27,7 @@ public class PostController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<Post> posts = postService.searchPosts(search, page, size);
+        Page<Post> posts = postService.searchPosts(search, page -1, size);
         return ResponseEntity.ok(posts);
     }
 
