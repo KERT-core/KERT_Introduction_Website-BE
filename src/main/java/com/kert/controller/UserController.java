@@ -101,8 +101,20 @@ public class UserController {
     }
 
     @DeleteMapping("/{studentId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long studentId) {
-        userService.deleteUser(studentId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteUser(@PathVariable Long studentId, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+
+        User user = userService.getUserById(studentId);
+        Long currentUserId = jwtTokenProvider.getUserIdFromJWT(token);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        boolean isAdmin = adminService.getAdminByStudentId(currentUserId) != null;
+        if (isAdmin || currentUserId.equals(studentId)) {
+            userService.deleteUser(studentId);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }
