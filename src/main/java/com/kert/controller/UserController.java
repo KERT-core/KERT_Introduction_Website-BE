@@ -110,7 +110,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         boolean isAdmin = adminService.getAdminByStudentId(currentUserId) != null;
-        if (currentUserId.equals(studentId)) {
+        if (isAdmin || currentUserId.equals(studentId)) {
             userService.deleteUser(studentId);
             if (isAdmin) {
                 adminService.deleteAdmin(studentId);
