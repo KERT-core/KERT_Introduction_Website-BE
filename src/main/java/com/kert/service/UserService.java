@@ -1,9 +1,7 @@
 package com.kert.service;
 
 import com.kert.model.User;
-import com.kert.repository.AdminRepository;
 import com.kert.repository.UserRepository;
-// import com.kert.dto.PasswordDTO;
 import com.kert.dto.SignUpDTO;
 import com.kert.model.Password;
 import com.kert.repository.PasswordRepository;
@@ -20,7 +18,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordRepository passwordRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AdminRepository adminRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -80,7 +77,6 @@ public class UserService {
     }
 
     public void deleteUser(Long studentId) {
-        adminRepository.deleteById(studentId);
         userRepository.deleteById(studentId);
     }
 }
