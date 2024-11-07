@@ -37,7 +37,7 @@ public class Post {
     private String description;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     @NotBlank(message = "Content is mandatory")
     private String content;
 
