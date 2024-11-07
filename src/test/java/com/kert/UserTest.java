@@ -248,8 +248,18 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("delete user with not_admin")
-    public void deleteUserByIdWithNotAdmin() throws Exception {
-        mockMvc.perform(delete("/users/", testUser.getStudentId()).header("Authorization", "Bearer " + userJwtToken)).andExpect(status().isForbidden());
+    @DisplayName("delete user with self")
+    public void deleteUserByIdWithSelf() throws Exception {
+        when(userService.getUserById(testUser.getStudentId())).thenReturn(testUser);
+
+        mockMvc.perform(delete("/users/{studentId}", testUser.getStudentId()).header("Authorization", "Bearer " + userJwtToken)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("delete user with another")
+    public void deleteUserByIdWithAnother() throws Exception {
+        when(userService.getUserById(2L)).thenReturn(new User());
+
+        mockMvc.perform(delete("/users/2", testUser.getStudentId()).header("Authorization", "Bearer " + userJwtToken)).andExpect(status().isForbidden());
     }
 }
