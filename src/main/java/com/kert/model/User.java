@@ -23,7 +23,7 @@ public class User {
 
     private String name;
     private String email;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String profilePicture;
     private String generation;
     private String major;

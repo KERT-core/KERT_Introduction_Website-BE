@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordRepository passwordRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final long MAX_PROFILE_PICTURE_SIZE = 2 * 1024 * 1024;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -27,10 +29,20 @@ public class UserService {
         return userRepository.findById(studentId).orElse(null);
     }
 
+    private boolean isProfilePictureSizeValid(String profilePicture) {
+        if (profilePicture == null) {
+            return true;
+        }
+        byte[] profilePictureBytes = profilePicture.getBytes(StandardCharsets.UTF_8);
+        return profilePictureBytes.length <= MAX_PROFILE_PICTURE_SIZE;
+    }
 
     public User createUser(SignUpDTO signUpDTO) {
-        User user = new User();
+        if (!isProfilePictureSizeValid(signUpDTO.getProfilePicture())) {
+            throw new IllegalArgumentException("프로필 사진 크기가 2MB를 초과합니다.");
+        }
 
+        User user = new User();
         user.setStudentId(signUpDTO.getStudentId());
         user.setEmail(signUpDTO.getEmail());
         user.setName(signUpDTO.getName());
@@ -38,11 +50,10 @@ public class UserService {
         user.setGeneration(signUpDTO.getGeneration());
         user.setMajor(signUpDTO.getMajor());
 
-        System.out.println(user);
-
         if (userRepository.existsById(user.getStudentId())) {
             throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
         }
+
         Password password = new Password();
         password.setUserId(user.getStudentId());
         password.setHash(passwordEncoder.encode(signUpDTO.getPassword()));
