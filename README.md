@@ -107,4 +107,4 @@ git push origin dev
 
 ## 사용하는 프레임워크/라이브러리
 
-### SpringBoot 3.3.2 + MySQL
+### SpringBoot 3.3.5 + MySQL

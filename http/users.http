@@ -1,0 +1,84 @@
+### GET request
+GET localhost:8080/users
+Content-Type: application/json
+
+### POST request
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "student_id": 2024123456,
+  "name": "홍길동",
+  "email": "example@knu.ac.kr",
+  "profile_picture": "https://example.com/knu.jpg",
+  "generation": "2022.1",
+  "major": "asdf"
+}
+
+### POST request
+GET localhost:8080/users/2024123456
+
+### PUT request
+PUT localhost:8080/users/2024123456
+Content-Type: application/json
+
+{
+  "name": "심청이",
+  "email": "simcom@knu.ac.kr",
+  "profile_picture": "https://example.com/simcom.jpg",
+  "generation": "2022.1",
+  "major": "심컴"
+}
+
+### DELETE request
+DELETE localhost:8080/users/2024123456
+
+### Signup
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "studentId": 2024123456,
+  "name": "홍길동",
+  "email": "example@knu.ac.kr",
+  "profilePicture": "https://example.com/knu.jpg",
+  "generation": "2022.1",
+  "major": "asdf",
+  "password": "password123"
+}
+
+###
+
+### Login
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "studentId": 2024123456,
+  "password": "password123"
+}
+
+###
+
+### Get All Users
+GET http://localhost:8080/users
+
+###
+
+### Get User by ID
+GET http://localhost:8080/users/1
+
+###
+
+### Update User
+PUT http://localhost:8080/users/1
+Content-Type: application/json
+
+{
+  "name": "John Doe Updated"
+}
+
+###
+
+### Delete User
+DELETE http://localhost:8080/users/1
